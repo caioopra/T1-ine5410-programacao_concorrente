@@ -58,7 +58,7 @@ void hostess_guide_first_in_line_customer_to_conveyor_seat(int seat) {
     print_conveyor_belt(conveyor);    
 }
 
-void* hostess_run() {
+void* hostess_run() {   
     /* 
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO HOSTESS.
         NOTAS:

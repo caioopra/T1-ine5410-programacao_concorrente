@@ -1,0 +1,60 @@
+- args => pronto
+	> constantes booleanas
+	> configurações para simulação
+	> entrada de configuração
+	> prints e "pretty print"
+
+- conveyor_belt => pronto
+	> conveyor_belt_init: cria conveyor_belt, inicializa lugares, inicializa seus mutexes e thread (chama conveyor_belt_run)
+	> conveyor_belt_run: atualiza esteira (já com mutex) e prints
+	> print_conveyor_belt
+	> conveyor_belt_finalize: pthread_join sem retorno, destroi mutexes e desaloca
+
+	-> possui _seats_mutex e _food_slots_mutex
+	-> thread iniciada em init -> conveyor_belt_run(self)
+
+- costumer => MODIFICAR!
+	> _init			(PRONTO): aloca costumer_t, id, qtd de pratos que quer para cada disponível, thread para cliente
+	> _run (costumer_t)	(FAZER!): 
+	> _pick_food(food_slot) (FAZER!)
+	> _eat(self, menu_item) (FAZER!)
+	> _leave(self)		(FAZER!)
+	> _finalize(sel)	(PRONTO): thread_join e desaloca
+	> _print(costumer)	(PRONTO):   
+
+
+	-> cada cliente é uma thread  (costumer_run(self))
+
+- globals => MODIFICAR!
+	> globals_finalize	(PRONTO): finaliza clock global e conveyor_belt
+
+	-> adicionar variáveis globais que serão printadas no fim da execução
+	-> usar get e set
+
+- hostess => MODIFICAR!
+	> _init()		(PRONTO): aloca, thread (chama _run)
+	> _run()		(FAZER!)
+	> _check_for_a_free_seat(FAZER!)
+	> _guide_first_in_line  (FAZER!)
+	> finalize()		(PRONTO): join, desaloca
+
+- menu.h => PRONTO:
+	-> enum com pratos do menu, tempo de preparação e símbolos
+
+- queue => PRONTO:
+	> _init(): aloca, thread->run
+	> _run(): cria cliente, o insere na fila, 
+	> _insert()
+	> _remove()
+	> _finalize(): finaliza os clientes da fila, join, free
+
+- sushi_chef => MODIFICAR!
+	> _init()		(PRONTO): aloca, id, thread->run()
+	> _run(sushi_chef_t)	(FAZER!)
+	> _seat(sushi_chef_t)	(FAZER!)
+	> _preapare_food(chef, menu_tem) 	(PRONTO)
+	> _place_food(sushi_chef, menu_item)	(FAZER!)
+	> _leave(sushi_chef_t)	(FAZER!)
+	> _finalize(sushi_chef_t)(PRONTO)
+
+- virtual_clock => PRONTO
