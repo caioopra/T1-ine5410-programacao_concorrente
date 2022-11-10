@@ -73,7 +73,7 @@ void* hostess_run() {
     queue_t* queue = globals_get_queue();
     int sushi_shop_fechado = FALSE;
 
-    while (sushi_shop_fechado == FALSE) {  // Adicione a lógica para que o Hostess realize o fechamento do Sushi Shop!
+    while (!sushi_shop_fechado) {  // Adicione a lógica para que o Hostess realize o fechamento do Sushi Shop!
         if (queue->_length > 0) {
             int seat = hostess_check_for_a_free_conveyor_seat();
             hostess_guide_first_in_line_customer_to_conveyor_seat(seat);

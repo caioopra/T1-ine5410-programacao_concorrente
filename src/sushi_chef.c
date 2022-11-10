@@ -16,6 +16,7 @@ void* sushi_chef_run(void* arg) {
         4.  CUIDADO COM ERROS DE CONCORRÊNCIA.
     */ 
     sushi_chef_t* self = (sushi_chef_t*) arg;
+    //? não precisa do clock?
     // virtual_clock_t* global_clock = globals_get_virtual_clock();
 
     sushi_chef_seat(self);

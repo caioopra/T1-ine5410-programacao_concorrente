@@ -1,3 +1,8 @@
+TODO:
+	-> chef está colocando comida sobrescrevendo as que estão na esteira (recriar erro: deixar esteira encher)
+		=> parar de produzir quando encher
+
+
 - args => pronto
 	> constantes booleanas
 	> configurações para simulação
@@ -12,6 +17,10 @@
 
 	-> possui _seats_mutex e _food_slots_mutex
 	-> thread iniciada em init -> conveyor_belt_run(self)
+
+	-> lock na esteira: quando chef por prato, pegar prato
+	   unloc	  : após chef por prato, após pegar prato
+
 
 - costumer => MODIFICAR!
 	> _init			(PRONTO): aloca costumer_t, id, qtd de pratos que quer para cada disponível, thread para cliente

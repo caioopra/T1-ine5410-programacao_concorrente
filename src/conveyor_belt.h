@@ -21,6 +21,7 @@ typedef struct conveyor_belt {
     int* _food_slots;
     pthread_mutex_t _seats_mutex;
     pthread_mutex_t _food_slots_mutex;
+    pthread_mutex_t* _individual_slots_mutexes;   // @Caio: cada posição da esteira possui um mutex
     pthread_t thread;
 } conveyor_belt_t;
 
