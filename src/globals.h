@@ -54,4 +54,19 @@ extern queue_t *globals_get_queue();
  */
 extern void globals_finalize();
 
+/**
+ * @brief Muda o estado do sushi shop
+ * 
+ * @param state 
+ */
+
+void set_global_oppened(unsigned int state);
+
+/**
+ * @brief Retorna se a loja está aberta ou fechada
+ * 
+ * @return unsigned int 
+ */
+unsigned int get_global_oppened();
+
 #endif  // __GLOBALS_H__

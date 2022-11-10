@@ -5,7 +5,6 @@
 #include "globals.h"
 #include "menu.h"
 
-
 void* sushi_chef_run(void* arg) {
     /* 
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO SUSHI CHEF.
@@ -17,15 +16,19 @@ void* sushi_chef_run(void* arg) {
         4.  CUIDADO COM ERROS DE CONCORRÊNCIA.
     */ 
     sushi_chef_t* self = (sushi_chef_t*) arg;
-    virtual_clock_t* global_clock = globals_get_virtual_clock();
+    // virtual_clock_t* global_clock = globals_get_virtual_clock();
 
     sushi_chef_seat(self);
-    while (TRUE) {
+    while (get_global_oppened()) {
         enum menu_item next_dish = rand() % 5;
         sushi_chef_prepare_food(self, next_dish);
         sushi_chef_place_food(self, next_dish);
     }
 
+    sushi_chef_leave(self);
+    sushi_chef_finalize(self);
+
+    // para quando o sushi_chef fecha
     pthread_exit(NULL);
 }
 
@@ -44,21 +47,15 @@ void sushi_chef_seat(sushi_chef_t* self) {
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d arrived at the Sushi Shop and wants to seat!\n", self->_id);
     
-    while (TRUE) {
-        for (int i=0; i<conveyor->_size; i++) {
-            pthread_mutex_lock(&conveyor->_seats_mutex);
-            if (conveyor->_seats[i] == -1) {
-                conveyor->_seats[i] = 0;
-                self->_seat_position = i;
-                print_virtual_time(globals_get_virtual_clock());
-                fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[%d]!\n", self->_id, i);
-                pthread_mutex_unlock(&conveyor->_seats_mutex);
-                break;
-            }
-            pthread_mutex_unlock(&conveyor->_seats_mutex);
-        }
-        break;
-    }
+    pthread_mutex_lock(&conveyor->_seats_mutex);
+
+    conveyor->_seats[0] = 0;
+    self->_seat_position = 0;
+    
+    print_virtual_time(globals_get_virtual_clock());
+    fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[0]!\n", self->_id);
+
+    pthread_mutex_unlock(&conveyor->_seats_mutex);
 }
 
 void sushi_chef_leave(sushi_chef_t* self) {
@@ -73,6 +70,9 @@ void sushi_chef_leave(sushi_chef_t* self) {
 
     /* INSIRA SUA LÓGICA AQUI */
     
+    conveyor->_seats[0] = -1;
+    self->_seat_position = -1;
+
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[%d] stopped cooking and left the shop!\n", self->_id, self->_seat_position);    
 }

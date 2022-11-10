@@ -2,15 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
+#include "globals.h"
 
 #include "virtual_clock.h"
 
 
 void* virtual_clock_run(void* arg) {
     /* ESSA FUNÇÃO JÁ POSSUÍ A LÓGICA BÁSICA DE FUNCIONAMENTO DO RELÓGIO VIRTUAL */
+    set_global_oppened(TRUE);  // abre o sushi shop
+
     virtual_clock_t* self = (virtual_clock_t*) arg;
     while (TRUE) {
         if (self->current_time >= self->closing_time) {
+            set_global_oppened(FALSE);  // fecha o sushi shop
             print_virtual_time(self);
             fprintf(stdout, GREEN "[INFO]" RED " RESTAURANT IS CLOSED!!!\n");
         }
