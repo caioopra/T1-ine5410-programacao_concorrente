@@ -30,7 +30,7 @@ int hostess_check_for_a_free_conveyor_seat() {
             if (conveyor->_seats[i] == -1) {  // Atenção à regra! (-1 = livre, 0 = sushi_chef, 1 = customer)
                 print_virtual_time(globals_get_virtual_clock());
                 fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess encontrou o assento %d livre para o próximo cliente!\n", i);
-                /em_post(&cheio);
+                sem_post(&cheio);
                 return i;
             }
         }

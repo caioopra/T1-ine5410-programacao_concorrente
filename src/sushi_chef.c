@@ -20,7 +20,7 @@ void* sushi_chef_run(void* arg) {
     // virtual_clock_t* global_clock = globals_get_virtual_clock();
 
     sushi_chef_seat(self);
-    while (get_global_oppened()) {
+    while (globals_get_oppened()) {
         enum menu_item next_dish = rand() % 5;
         sushi_chef_prepare_food(self, next_dish);
         sushi_chef_place_food(self, next_dish);

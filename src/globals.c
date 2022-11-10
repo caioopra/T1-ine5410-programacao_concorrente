@@ -51,11 +51,11 @@ queue_t* globals_get_queue() {
     return global_queue;
 }
 
-void set_global_oppened(unsigned int state) {
+void globals_set_oppened(unsigned int state) {
     oppened = state;
 }
 
-unsigned int get_global_oppened() {
+unsigned int globals_get_oppened() {
     return oppened;
 }
 

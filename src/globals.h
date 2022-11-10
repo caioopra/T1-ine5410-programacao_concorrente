@@ -61,14 +61,14 @@ extern void globals_finalize();
  * @param state 
  */
 
-void set_global_oppened(unsigned int state);
+void globals_set_oppened(unsigned int state);
 
 /**
  * @brief Retorna se a loja está aberta ou fechada
  * 
  * @return unsigned int 
  */
-unsigned int get_global_oppened();
+unsigned int globals_get_oppened();
 
 sem_t globals_get_sem_cheio();
 
