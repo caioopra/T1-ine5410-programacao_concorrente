@@ -1,5 +1,5 @@
 #include <stdlib.h>
-
+#include "semaphore.h"
 #include "globals.h"
 
 
@@ -17,6 +17,15 @@ virtual_clock_t* global_virtual_clock = NULL;
 conveyor_belt_t* global_conveyor_belt = NULL;
 queue_t* global_queue = NULL;
 unsigned int oppened;
+sem_t cheio,vazio;
+
+
+sem_t globals_get_sem_cheio(){
+    return cheio;
+}
+sem_t globals_get_sem_vazio(){
+    return vazio;
+}
 
 void globals_set_virtual_clock(virtual_clock_t* virtual_clock) {
     global_virtual_clock = virtual_clock;

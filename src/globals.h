@@ -5,6 +5,7 @@
 #include "conveyor_belt.h"
 #include "virtual_clock.h"
 #include "queue.h"
+#include "semaphore.h"
 
 /**
  * @brief Inicia um relógio virtual (de modo global)
@@ -68,5 +69,9 @@ void set_global_oppened(unsigned int state);
  * @return unsigned int 
  */
 unsigned int get_global_oppened();
+
+sem_t globals_get_sem_cheio();
+
+sem_t globals_get_sem_vazio();
 
 #endif  // __GLOBALS_H__
