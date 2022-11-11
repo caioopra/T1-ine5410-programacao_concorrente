@@ -30,23 +30,33 @@ void* customer_run(void* arg) {
      *  @Caio: laço para percorrer as posições que o cliente consegue pegar (i-1, i, i+1)
      *         verifica, para cada posição, se quer algum daquele determinado prato
     */
-    for (int reachable = -1; reachable < 2; reachable++) {
+
+    // se não for o último, pode pegar o que está uma posição a frente
+    int condition;
+    if (self->_seat_position < conveyor_belt->_size - 1) {
+        condition = 1;
+    } else {
+        condition = 2;
+    }
+
+    for (int reachable = -1; reachable < condition; reachable++) {
+        // percorre as comidas que deseja, comparando com as que estão disponíveis
         for (int i = 0; i < 5; i++) {
-            // posição é a posição sendo vista da esteira (i-1, i ou i+1)
+            // posição é a posição sendo vista da esteira (seat_position-1, seat_position ou seat_position+1)
             int posicao = self->_seat_position+reachable;
             
-            // pode usar o enum do valor da comida como indexação para os pedidos do cliente
+            // comida sendo vista na esteira (0-5 (enum em menu))
             int comida = conveyor_belt->_food_slots[posicao];
-
-            if (comida == self->_wishes[comida]) {
-                // se ver algum prato que quer, tranca o mutex, para esteira, pega o prato e destrava os mutexes
-                // cada posição da esteira é protegida individualmente por um mutex
-                pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
-                pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                costumer_pick_food(posicao);
-                pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
-            }
+            printf("posicao: %d\n", posicao);
+            // if (comida == self->_wishes[comida]) {
+            //     // se ver algum prato que quer, tranca o mutex, para esteira, pega o prato e destrava os mutexes
+            //     // cada posição da esteira é protegida individualmente por um mutex
+            //     pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
+            //     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+            //     customer_pick_food(posicao);
+            //     pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+            //     pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+            // }
         }
     }
     

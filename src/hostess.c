@@ -16,8 +16,6 @@ int hostess_check_for_a_free_conveyor_seat() {
     */
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
     virtual_clock_t* virtual_clock = globals_get_virtual_clock();
-    sem_t cheio = globals_get_sem_cheio();
-    sem_t vazio = globals_get_sem_vazio();
 
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess está procurando por um assento livre...\n");
@@ -25,12 +23,10 @@ int hostess_check_for_a_free_conveyor_seat() {
 
     
     while(TRUE){
-        sem_wait(&vazio);
         for (int i = 1; i < conveyor->_size; i++) {
             if (conveyor->_seats[i] == -1) {  // Atenção à regra! (-1 = livre, 0 = sushi_chef, 1 = customer)
                 print_virtual_time(globals_get_virtual_clock());
                 fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess encontrou o assento %d livre para o próximo cliente!\n", i);
-                sem_post(&cheio);
                 return i;
             }
         }
@@ -52,15 +48,10 @@ void hostess_guide_first_in_line_customer_to_conveyor_seat(int seat) {
     */
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
     queue_t* queue = globals_get_queue();
-    sem_t cheio = globals_get_sem_cheio();
-    sem_t vazio = globals_get_sem_vazio();
 
-
-    sem_wait(&cheio);
     customer_t* customer = queue_remove(queue);
     conveyor->_seats[seat] = 1;
     customer->_seat_position = seat;
-    sem_post(&vazio);
 
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess levou o cliente %d para o assento %d!\n", customer->_id, seat);
@@ -81,12 +72,7 @@ void* hostess_run() {
     virtual_clock_t* virtual_clock = globals_get_virtual_clock();
     queue_t* queue = globals_get_queue();
     int sushi_shop_fechado = FALSE;
-    sem_t cheio = globals_get_sem_cheio();
-    sem_t vazio = globals_get_sem_vazio();
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
-
-    sem_init(&cheio,0,0);
-    sem_init(&vazio,0,conveyor->_size);
 
     while (!sushi_shop_fechado) {  // Adicione a lógica para que o Hostess realize o fechamento do Sushi Shop!
         if (queue->_length > 0) {
