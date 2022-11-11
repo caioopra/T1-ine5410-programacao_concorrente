@@ -18,9 +18,7 @@ conveyor_belt_t* global_conveyor_belt = NULL;
 queue_t* global_queue = NULL;
 
 // indica se o sushi shop está aberto
-unsigned int oppened;
-
-
+unsigned int oppened = FALSE;
 
 // @Caio: arrays dos pratos seguem mesma ordem do enum
 // array com quantidades produzidas de cada prato

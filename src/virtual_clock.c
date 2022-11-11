@@ -13,10 +13,12 @@ void* virtual_clock_run(void* arg) {
 
     virtual_clock_t* self = (virtual_clock_t*) arg;
     while (TRUE) {
+        // se chegar no horário de fechar, configura oppened como FALSE
         if (self->current_time >= self->closing_time) {
-            globals_get_oppened(FALSE);  // fecha o sushi shop
+            globals_set_oppened(FALSE);  // fecha o sushi shop
             print_virtual_time(self);
             fprintf(stdout, GREEN "[INFO]" RED " RESTAURANT IS CLOSED!!!\n");
+            break;
         }
         self->current_time += 1;
         msleep(1000/self->clock_speed_multiplier);
