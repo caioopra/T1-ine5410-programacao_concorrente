@@ -2,6 +2,10 @@ TODO:
 	-> chef está colocando comida sobrescrevendo as que estão na esteira (recriar erro: deixar esteira encher)
 		=> parar de produzir quando encher
 
+=> seats_mutex: trancar quando cliente terminar todos os pedidos (e levantar) e quando cliente for entrar
+	-> destravar quando terminar de sair e quando sentar (cliente faz o unlock?)
+
+
 
 - args => pronto
 	> constantes booleanas

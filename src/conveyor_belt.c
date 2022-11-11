@@ -18,6 +18,7 @@ void* conveyor_belt_run(void* arg) {
         print_conveyor_belt(self);
 
         msleep(CONVEYOR_MOVING_PERIOD / virtual_clock->clock_speed_multiplier);
+        // move a esteira (não permite pegar enquanto está mexendo)
         pthread_mutex_lock(&self->_food_slots_mutex);
         int last = self->_food_slots[0];
         for (int i = 0; i < self->_size - 1; i++) {

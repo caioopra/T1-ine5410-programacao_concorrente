@@ -16,8 +16,19 @@
 virtual_clock_t* global_virtual_clock = NULL;
 conveyor_belt_t* global_conveyor_belt = NULL;
 queue_t* global_queue = NULL;
+
+// indica se o sushi shop está aberto
 unsigned int oppened;
+
+
 sem_t cheio,vazio;
+
+// @Caio: arrays dos pratos seguem mesma ordem do enum
+// array com quantidades produzidas de cada prato
+int* pratos_produzidos[5] = {0, 0, 0, 0, 0};
+
+// array com quantidades consumidas de cada prato
+int* pratos_consumidos[5] = {0, 0, 0, 0, 0};
 
 
 sem_t globals_get_sem_cheio(){
@@ -59,6 +70,21 @@ unsigned int globals_get_oppened() {
     return oppened;
 }
 
+int* globals_get_pratos_produzidos() {
+    return pratos_produzidos;
+}
+
+void globals_add_prato_produzido(int prato) {
+    pratos_produzidos[prato] += 1;
+}
+
+int* globals_get_prato_consumido() {
+    return pratos_consumidos;
+}
+
+void globals_add_prato_consumido(int prato) {
+    pratos_consumidos[prato] += 1;
+}
 
 /**
  * @brief Finaliza todas as variáveis globais.

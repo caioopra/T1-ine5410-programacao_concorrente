@@ -13,8 +13,8 @@ void* customer_run(void* arg) {
         1.  A PRIMEIRA AÇÃO REALIZADA SERÁ ESPERAR NA FILA GLOBAL DE CLIENTES, ATÉ QUE O HOSTESS
             GUIE O CLIENTE PARA UM ASSENTO LIVRE.
         2.  APÓS SENTAR-SE, O CLIENTE COMEÇARÁ PEGAR E COMER OS PRATOS DA ESTEIRA.
-        3.  O CLIENTE SÓ PODERÁ PEGAR UM PRATO QUANDO A ESTEIRA ESTIVER PARADA.
-        4.  O CLIENTE SÓ PEGARÁ PRATOS CASO ELE DESEJE-OS, INFORMAÇÃO CONTIDA NO ARRAY self->_wishes[...].
+        3.  O CLIENTE SÓ PODERÁ PEGAR UM PRATO QUANDO A ESTEIRA ESTIVER PARADA.     OK?
+        4.  O CLIENTE SÓ PEGARÁ PRATOS CASO ELE DESEJE-OS, INFORMAÇÃO CONTIDA NO ARRAY self->_wishes[...].      OK
         5.  APÓS CONSUMIR TODOS OS PRATOS DESEJADOS, O CLIENTE DEVERÁ SAIR IMEDIATAMENTE DA ESTEIRA.
         6.  QUANTO O RESTAURANTE FECHAR, O CLIENTE DEVERÁ SAIR IMEDIATAMENTE DA ESTEIRA. 
         7.  CASO O CLIENTE ESTEJA COMENDO QUANDO O SUSHI SHOP FECHAR, ELE DEVE TERMINAR DE COMER E EM SEGUIDA
@@ -24,6 +24,31 @@ void* customer_run(void* arg) {
     customer_t* self = (customer_t*) arg;
 
     /* INSIRA SUA LÓGICA AQUI */
+    conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
+
+    /*
+     *  @Caio: laço para percorrer as posições que o cliente consegue pegar (i-1, i, i+1)
+     *         verifica, para cada posição, se quer algum daquele determinado prato
+    */
+    for (int reachable = -1; reachable < 2; reachable++) {
+        for (int i = 0; i < 5; i++) {
+            // posição é a posição sendo vista da esteira (i-1, i ou i+1)
+            int posicao = self->_seat_position+reachable;
+            
+            // pode usar o enum do valor da comida como indexação para os pedidos do cliente
+            int comida = conveyor_belt->_food_slots[posicao];
+
+            if (comida == self->_wishes[comida]) {
+                // se ver algum prato que quer, tranca o mutex, para esteira, pega o prato e destrava os mutexes
+                // cada posição da esteira é protegida individualmente por um mutex
+                pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
+                pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+                costumer_pick_food(posicao);
+                pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+                pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+            }
+        }
+    }
     
     msleep(1000000);  // REMOVA ESTE SLEEP APÓS IMPLEMENTAR SUA SOLUÇÃO!
     pthread_exit(NULL);
@@ -42,6 +67,7 @@ void customer_pick_food(int food_slot) {
     */
 
     /* INSIRA SUA LÓGICA AQUI */
+    
 }
 
 void customer_eat(customer_t* self, enum menu_item food) {
