@@ -27,7 +27,7 @@ void* sushi_chef_run(void* arg) {
     }
 
     sushi_chef_leave(self);
-    sushi_chef_finalize(self);
+
 
     // para quando o sushi_chef fecha
     pthread_exit(NULL);

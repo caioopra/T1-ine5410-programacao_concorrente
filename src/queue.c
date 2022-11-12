@@ -11,7 +11,7 @@ void* queue_run(void *arg) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     queue_t* self = (queue_t*) arg;
     virtual_clock_t* clock = globals_get_virtual_clock();
-    while (TRUE) {
+    while (globals_get_oppened()) {
         customer_t* customer = customer_init();
         queue_insert(self, customer);
         print_virtual_time(clock);
