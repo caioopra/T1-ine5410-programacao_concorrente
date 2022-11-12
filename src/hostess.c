@@ -80,7 +80,7 @@ void* hostess_run() {
         }
         msleep(3000 / virtual_clock->clock_speed_multiplier);  // Não remova esse sleep!
     }
-
+    queue_finalize(queue);//finaliza a fila apos o fechamento
     pthread_exit(NULL);
 }
 
