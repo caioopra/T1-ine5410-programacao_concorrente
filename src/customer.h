@@ -6,7 +6,6 @@
 #include "menu.h"
 #include "conveyor_belt.h"
 
-
 /**
  * @brief Cliente do Sushi Shop.
 */
