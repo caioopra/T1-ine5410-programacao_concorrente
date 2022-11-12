@@ -46,14 +46,16 @@ void* customer_run(void* arg) {
         last_reachable = 1;
     }
     int posicao, comida;
-    while (globals_get_oppened() || !satisfeito) {
+    while (globals_get_oppened() && satisfeito) {
         if (self->_seat_position > 0) {
+
             for (int reachable = -1; reachable < last_reachable; reachable++) {
+
                 // posição é a posição sendo vista da esteira (seat_position-1, seat_position ou seat_position+1)
                 posicao = self->_seat_position+reachable;
                 // comida sendo vista na esteira (0-5 (enum em menu))
                 comida = conveyor_belt->_food_slots[posicao];
-
+                
                 /*  @Caio: 
                     Se o prato que ele alcancar for um da lista dos que quer, pega o prato
                     -> tranca o mutex, para esteira, pega o prato e destrava os mutexes
@@ -66,7 +68,15 @@ void* customer_run(void* arg) {
                         customer_pick_food(posicao);
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                         pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+                        
+                        //come
                         customer_eat(self, comida);
+                        //remove comida da lista de comidas desejadas
+                        self->_wishes[comida]--;
+                        //decrementa satisfeito
+                        satisfeito--;
+                        //encerra o for e inicia nova busca
+                        break; 
                     }
                     else{
                     pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
@@ -77,7 +87,9 @@ void* customer_run(void* arg) {
             }
         }
     }
-    customer_leave(self);
+    if(self->_seat_position>0){
+        customer_leave(self);
+    }
     
     // msleep(1000000);  // REMOVA ESTE SLEEP APÓS IMPLEMENTAR SUA SOLUÇÃO!
     pthread_exit(NULL);

@@ -22,7 +22,7 @@ int hostess_check_for_a_free_conveyor_seat() {
     print_conveyor_belt(conveyor);
 
     
-    while(TRUE){
+    while(globals_get_oppened()){
         for (int i = 1; i < conveyor->_size; i++) {
             if (conveyor->_seats[i] == -1) {  // Atenção à regra! (-1 = livre, 0 = sushi_chef, 1 = customer)
                 print_virtual_time(globals_get_virtual_clock());
@@ -71,7 +71,6 @@ void* hostess_run() {
     */
     virtual_clock_t* virtual_clock = globals_get_virtual_clock();
     queue_t* queue = globals_get_queue();
-    conveyor_belt_t* conveyor = globals_get_conveyor_belt();
 
     while (globals_get_oppened()) {  // Adicione a lógica para que o Hostess realize o fechamento do Sushi Shop!
         if (queue->_length > 0) {
