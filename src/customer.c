@@ -40,21 +40,20 @@ void* customer_run(void* arg) {
     */
     // se não for o último, pode pegar o que está uma posição a frente
 
-    int last_reachable;
-    if (self->_seat_position < conveyor_belt->_size - 1) {
-        last_reachable = 2;
-    } else {
-        last_reachable = 1;
-    }
-
-
+    int last_reachable = 2;
     int posicao, comida;
+
     while (globals_get_oppened() && satisfeito) {
         if (self->_seat_position > 0) {
+
+            if (self->_seat_position == conveyor_belt->_size - 1)
+            last_reachable = 1;
+
 
             for (int reachable = -1; reachable < last_reachable; reachable++) {
 
                 // posição é a posição sendo vista da esteira (seat_position-1, seat_position ou seat_position+1)
+                
                 posicao = self->_seat_position+reachable;
                 // comida sendo vista na esteira (0-5 (enum em menu))
                 comida = conveyor_belt->_food_slots[posicao];
@@ -78,8 +77,7 @@ void* customer_run(void* arg) {
                         self->_wishes[comida]--;
                         //decrementa satisfeito
                         satisfeito--;
-                        //encerra o for e inicia nova busca
-                        break; 
+
                     }
                     else{
                     pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
