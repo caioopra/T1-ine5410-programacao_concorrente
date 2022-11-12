@@ -41,9 +41,9 @@ void* customer_run(void* arg) {
     // se não for o último, pode pegar o que está uma posição a frente
     int last_reachable;
     if (self->_seat_position < conveyor_belt->_size - 1) {
-        last_reachable = 1;
-    } else {
         last_reachable = 2;
+    } else {
+        last_reachable = 1;
     }
     int posicao, comida;
     while (globals_get_oppened() || !satisfeito) {
