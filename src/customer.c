@@ -39,12 +39,15 @@ void* customer_run(void* arg) {
         verifica, para cada posição, se quer algum daquele determinado prato
     */
     // se não for o último, pode pegar o que está uma posição a frente
+
     int last_reachable;
     if (self->_seat_position < conveyor_belt->_size - 1) {
         last_reachable = 2;
     } else {
         last_reachable = 1;
     }
+
+
     int posicao, comida;
     while (globals_get_oppened() && satisfeito) {
         if (self->_seat_position > 0) {
@@ -61,10 +64,10 @@ void* customer_run(void* arg) {
                     -> tranca o mutex, para esteira, pega o prato e destrava os mutexes
                     Cada posição da esteira é protegida individualmente por um mutex (_individual_slots_mutexes[i])
                 */
-                if (comida != -1 && comida == self->_wishes[comida]) {
+                if (comida != -1 && self->_wishes[comida]>0) {
                     pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                    if (comida != -1 && comida == self->_wishes[comida]) {
+                    if (comida != -1 && self->_wishes[comida]>0) {
                         customer_pick_food(posicao);
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                         pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
