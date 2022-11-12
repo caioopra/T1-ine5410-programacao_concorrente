@@ -64,17 +64,22 @@ void* customer_run(void* arg) {
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     if (comida != -1 && comida == self->_wishes[comida]) {
                         customer_pick_food(posicao);
+                        pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+                        customer_eat(self, comida);
                     }
+                    else{
                     pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+                    }
                     
-                    customer_eat(self, comida);
                 }
             }
         }
     }
+    customer_leave(self);
     
-    msleep(1000000);  // REMOVA ESTE SLEEP APÓS IMPLEMENTAR SUA SOLUÇÃO!
+    // msleep(1000000);  // REMOVA ESTE SLEEP APÓS IMPLEMENTAR SUA SOLUÇÃO!
     pthread_exit(NULL);
 }
 
@@ -162,8 +167,13 @@ void customer_leave(customer_t* self) {
         1.  ESSA FUNÇÃO DEVERÁ REMOVER O CLIENTE DO ASSENTO DO CONVEYOR_BELT GLOBAL QUANDO EXECUTADA.
     */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
-
+    
     /* INSIRA SUA LÓGICA AQUI */
+    //remove o consumer e libera o assento
+    int position = self->_seat_position;
+    self->_seat_position = -1;
+    conveyor_belt->_seats[position] = -1;
+    
 }
 
 customer_t* customer_init() {
