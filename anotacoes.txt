@@ -71,3 +71,11 @@ TODO:
 	> _finalize(sushi_chef_t)(PRONTO)
 
 - virtual_clock => PRONTO
+
+
+virtual_clock - globals - main
+sushi_chef - main
+queue
+hostess - main
+costumer - dos que estao na fila
+conveyor_belt - globals - main
