@@ -45,14 +45,14 @@ void* customer_run(void* arg) {
     } else {
         last_reachable = 2;
     }
-
+    int posicao, comida;
     while (globals_get_oppened() || !satisfeito) {
         if (self->_seat_position > 0) {
             for (int reachable = -1; reachable < last_reachable; reachable++) {
                 // posição é a posição sendo vista da esteira (seat_position-1, seat_position ou seat_position+1)
-                int posicao = self->_seat_position+reachable;
+                posicao = self->_seat_position+reachable;
                 // comida sendo vista na esteira (0-5 (enum em menu))
-                int comida = conveyor_belt->_food_slots[posicao];
+                comida = conveyor_belt->_food_slots[posicao];
 
                 /*  @Caio: 
                     Se o prato que ele alcancar for um da lista dos que quer, pega o prato
@@ -62,10 +62,13 @@ void* customer_run(void* arg) {
                 if (comida != -1 && comida == self->_wishes[comida]) {
                     pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                    customer_pick_food(posicao);
+                    if (comida != -1 && comida == self->_wishes[comida]) {
+                        customer_pick_food(posicao);
+                    }
                     pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
-                    break;
+                    
+                    customer_eat(self, comida);
                 }
             }
         }
@@ -77,8 +80,7 @@ void* customer_run(void* arg) {
 
 void customer_pick_food(int food_slot) {
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
-    printf("Pegou comida em %d\n", food_slot);
-    // printf("Comida na posicao: %d", conveyor_belt->_food_slots[food_slot]);
+    printf("Pegou comida em %d\n", food_slot);      // TODO: REMOVER
     /* 
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO CLIENTE.
         NOTAS:
@@ -92,9 +94,8 @@ void customer_pick_food(int food_slot) {
 
     /* INSIRA SUA LÓGICA AQUI */
     int comida_pega = conveyor_belt->_food_slots[food_slot];
-    globals_add_prato_consumido(comida_pega);
-    conveyor_belt->_food_slots[food_slot] = -1;
-    printf("comida pega: %d\n", comida_pega);
+    globals_add_prato_consumido(comida_pega);   // contador global dos pratos consumidos
+    conveyor_belt->_food_slots[food_slot] = -1; // remove prato da esteira
 }
 
 void customer_eat(customer_t* self, enum menu_item food) {
