@@ -80,7 +80,7 @@ void queue_finalize(queue_t* self) {
         free(item);
     }
     pthread_join(self->thread, NULL);
-    free(self);
+    free(self);    
 }
 
 void print_queue(queue_t* self) {
