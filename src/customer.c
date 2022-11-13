@@ -78,12 +78,10 @@ void* customer_run(void* arg) {
                         //decrementa satisfeito
                         satisfeito--;
 
+                    } else {
+                        pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
+                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
                     }
-                    else{
-                    pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                    pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
-                    }
-                    
                 }
             }
         }
@@ -98,7 +96,6 @@ void* customer_run(void* arg) {
 
 void customer_pick_food(int food_slot) {
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
-    printf("Pegou comida em %d\n", food_slot);      // TODO: REMOVER
     /* 
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO CLIENTE.
         NOTAS:
@@ -187,6 +184,7 @@ void customer_leave(customer_t* self) {
     self->_seat_position = -1;
     conveyor_belt->_seats[position] = -1;
     
+    customer_finalize(self);
 }
 
 customer_t* customer_init() {

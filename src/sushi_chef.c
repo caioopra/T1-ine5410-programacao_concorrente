@@ -1,21 +1,22 @@
+#include "sushi_chef.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "sushi_chef.h"
 #include "globals.h"
 #include "menu.h"
 
 void* sushi_chef_run(void* arg) {
-    /* 
+    /*
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO SUSHI CHEF.
         NOTAS:
         1.  O SUSHI CHEF SÓ PODE COMEÇAR A COZINHAR DEPOIS QUE ESTIVER POSICIONADO NA ESTEIRA.
         2.  ESSA FUNÇÃO JÁ POSSUI A LÓGICA PARA QUE O SUSHI CHEF COMECE A PREPARAR PRATOS ALEATÓRIOS.
-        3.  VOCÊ DEVE ADICIONAR A LÓGICA PARA QUE O SUSHI CHEF PARE DE ADICIONAR PRATOS E SAIA DA 
+        3.  VOCÊ DEVE ADICIONAR A LÓGICA PARA QUE O SUSHI CHEF PARE DE ADICIONAR PRATOS E SAIA DA
             ESTEIRA QUANDO O SUSHI SHOP FECHAR (VEJA O ARQUIVO `virtual_clock.c`).
         4.  CUIDADO COM ERROS DE CONCORRÊNCIA.
-    */ 
-    sushi_chef_t* self = (sushi_chef_t*) arg;
+    */
+    sushi_chef_t* self = (sushi_chef_t*)arg;
     //? não precisa do clock?
     // virtual_clock_t* global_clock = globals_get_virtual_clock();
 
@@ -28,13 +29,12 @@ void* sushi_chef_run(void* arg) {
 
     sushi_chef_leave(self);
 
-
     // para quando o sushi_chef fecha
     pthread_exit(NULL);
 }
 
 void sushi_chef_seat(sushi_chef_t* self) {
-    /* 
+    /*
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO SUSHI CHEF.
         NOTAS:
         1.  O CHEF DEVE SENTAR-SE NA "PONTA ESQUERDA" OU INÍCIO DA ESTEIRA.
@@ -42,17 +42,17 @@ void sushi_chef_seat(sushi_chef_t* self) {
         3.  NO ARRAY `conveyor_belt_t->_seats` UM ASSENTO VAZIO É REPRESENTADO POR -1.
         4.  CUIDADO COM ERROS DE CONCORRÊNCIA.
         5.  NÃO REMOVA OS PRINTS.
-    */ 
+    */
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
 
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d arrived at the Sushi Shop and wants to seat!\n", self->_id);
-    
+
     pthread_mutex_lock(&conveyor->_seats_mutex);
 
     conveyor->_seats[0] = 0;
     self->_seat_position = 0;
-    
+
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[0]!\n", self->_id);
 
@@ -60,7 +60,7 @@ void sushi_chef_seat(sushi_chef_t* self) {
 }
 
 void sushi_chef_leave(sushi_chef_t* self) {
-    /* 
+    /*
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO SUSHI CHEF.
         NOTAS:
         1.  O CHEF DEVE PARAR DE COZINHAR E SAIR DA ESTEIRA SOMENTE APÓS O HORÁRIO DE FECHAMENTO DA LOJA.
@@ -70,16 +70,16 @@ void sushi_chef_leave(sushi_chef_t* self) {
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
 
     /* INSIRA SUA LÓGICA AQUI */
-    
+
     conveyor->_seats[0] = -1;
     self->_seat_position = -1;
 
     print_virtual_time(globals_get_virtual_clock());
-    fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[%d] stopped cooking and left the shop!\n", self->_id, self->_seat_position);    
+    fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d seated at conveyor->_seats[%d] stopped cooking and left the shop!\n", self->_id, self->_seat_position);
 }
 
 void sushi_chef_place_food(sushi_chef_t* self, enum menu_item dish) {
-    /* 
+    /*
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO SUSHI CHEF.
         NOTAS:
         1.  O CHEF SÓ PODE ADICIONAR COMIDA NO SLOT À SUA FRENTE
@@ -87,19 +87,32 @@ void sushi_chef_place_food(sushi_chef_t* self, enum menu_item dish) {
         3.  O CHEF DEVE ESPERAR ATÉ QUE UM SLOT VAGO APAREÇA PARA POSICIONAR O PRATO NA ESTEIRA
         4.  CUIDADO COM ERROS DE CONCORRÊNCIA
         5.  NÃO REMOVA OS PRINTS
-    */ 
+    */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
     print_virtual_time(globals_get_virtual_clock());
-    fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d wants to place %u at conveyor->_foot_slot[%d]!\n", self->_id, dish, self->_seat_position);
 
-    /* INSIRA SUA LÓGICA AQUI */
+    /* @Caio:
+       Verifica se posições que o chef alcança estão livres para posicionar comida
+       Se estiver vazio, prepara prato e posiciona (trancando os mutexes)
+    */
+    int can_place_food = FALSE;
+    if (conveyor_belt->_food_slots[0] == -1) {
+        can_place_food = TRUE;
+    }
+    
+    // se conseguiu achar uma posição válida para posicionar comida, posiciona
+    if (can_place_food) {
+        // lock no mutexe da esteira
+        pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
+        fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d wants to place %u at conveyor->_foot_slot[%d]!\n", self->_id, dish, self->_seat_position);
+    
+        conveyor_belt->_food_slots[self->_seat_position] = dish;
+        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
 
-    conveyor_belt->_food_slots[self->_seat_position] = dish;
-    print_virtual_time(globals_get_virtual_clock());
-    fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d placed %u at conveyor->_foot_slot[%d]!\n", self->_id, dish, self->_seat_position);
+        print_virtual_time(globals_get_virtual_clock());
+        fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d placed %u at conveyor->_foot_slot[%d]!\n", self->_id, dish, self->_seat_position);
 
-    /* INSIRA SUA LÓGICA AQUI */
-
+    }
 }
 
 void sushi_chef_prepare_food(sushi_chef_t* self, enum menu_item menu_item) {
@@ -109,38 +122,38 @@ void sushi_chef_prepare_food(sushi_chef_t* self, enum menu_item menu_item) {
         case Sushi:
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d started preparing Sushi!\n", self->_id);
-            msleep(SUSHI_PREP_TIME/global_clock->clock_speed_multiplier);
+            msleep(SUSHI_PREP_TIME / global_clock->clock_speed_multiplier);
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d finished preparing Sushi!\n", self->_id);
             break;
         case Dango:
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d started preparing Dango!\n", self->_id);
-            msleep(DANGO_PREP_TIME/global_clock->clock_speed_multiplier);
+            msleep(DANGO_PREP_TIME / global_clock->clock_speed_multiplier);
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d finished preparing Dango!\n", self->_id);
             break;
         case Ramen:
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d started preparing Ramen!\n", self->_id);
-            msleep(RAMEN_PREP_TIME/global_clock->clock_speed_multiplier);
+            msleep(RAMEN_PREP_TIME / global_clock->clock_speed_multiplier);
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d finished preparing Ramen!\n", self->_id);
             break;
         case Onigiri:
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d started preparing Onigiri!\n", self->_id);
-            msleep(ONIGIRI_PREP_TIME/global_clock->clock_speed_multiplier);
+            msleep(ONIGIRI_PREP_TIME / global_clock->clock_speed_multiplier);
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d finished preparing Onigiri!\n", self->_id);
             break;
         case Tofu:
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d started preparing Tofu!\n", self->_id);
-            msleep(TOFU_PREP_TIME/global_clock->clock_speed_multiplier);
+            msleep(TOFU_PREP_TIME / global_clock->clock_speed_multiplier);
             print_virtual_time(globals_get_virtual_clock());
             fprintf(stdout, GREEN "[INFO]" NO_COLOR " Sushi Chef %d finished preparing Tofu!\n", self->_id);
-            break; 
+            break;
         default:
             fprintf(stdout, RED "[ERROR] Invalid menu_item variant passed to `sushi_chef_prepare_food()`.\n" NO_COLOR);
             exit(EXIT_FAILURE);
@@ -156,7 +169,7 @@ sushi_chef_t* sushi_chef_init() {
     }
     self->_id = rand() % 1000;
     self->_seat_position = -1;
-    pthread_create(&self->thread, NULL, sushi_chef_run, (void *) self);
+    pthread_create(&self->thread, NULL, sushi_chef_run, (void*)self);
     return self;
 }
 
