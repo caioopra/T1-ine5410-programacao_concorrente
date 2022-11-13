@@ -108,9 +108,9 @@ void customer_pick_food(int food_slot) {
     */
 
     /* INSIRA SUA LÓGICA AQUI */
-    int comida_pega = conveyor_belt->_food_slots[food_slot];
-    globals_add_prato_consumido(comida_pega);   // contador global dos pratos consumidos
+    
     conveyor_belt->_food_slots[food_slot] = -1; // remove prato da esteira
+    
 }
 
 void customer_eat(customer_t* self, enum menu_item food) {
@@ -124,10 +124,16 @@ void customer_eat(customer_t* self, enum menu_item food) {
             ENTÃO UM self->_wishes = [0,0,1,2,0] CONDIZ COM O DESEJO DE COMER 1 RAMÉN E 2 ONIGUIRIS.
     */
 
+    conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
+    int comida_pega = conveyor_belt->_food_slots[food];
+
     /* INSIRA SUA LÓGICA AQUI */
+
+    globals_add_prato_consumido(comida_pega);
 
     /* NÃO EDITE O CONTEÚDO ABAIXO */
     virtual_clock_t* global_clock = globals_get_virtual_clock();
+
     switch (food) {
         case Sushi:
             print_virtual_time(globals_get_virtual_clock());

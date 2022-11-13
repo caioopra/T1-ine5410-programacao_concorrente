@@ -73,7 +73,9 @@ void conveyor_belt_finalize(conveyor_belt_t* self) {
     for (int i = 0; i < self->_size; i++) {
         pthread_mutex_destroy(&self->_individual_slots_mutexes[i]);
     }
-
+    free(self->_food_slots);
+    free(self->_seats);
+    free(self->_individual_slots_mutexes);
     free(self);
 }
 
