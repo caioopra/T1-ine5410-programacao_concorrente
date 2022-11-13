@@ -1,17 +1,17 @@
+#include "virtual_clock.h"
+
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <errno.h>
+
 #include "globals.h"
-
-#include "virtual_clock.h"
-
 
 void* virtual_clock_run(void* arg) {
     /* ESSA FUNÇÃO JÁ POSSUÍ A LÓGICA BÁSICA DE FUNCIONAMENTO DO RELÓGIO VIRTUAL */
     globals_set_oppened(TRUE);  // abre o sushi shop
 
-    virtual_clock_t* self = (virtual_clock_t*) arg;
+    virtual_clock_t* self = (virtual_clock_t*)arg;
     while (TRUE) {
         // se chegar no horário de fechar, configura oppened como FALSE
         if (self->current_time >= self->closing_time) {
@@ -21,7 +21,7 @@ void* virtual_clock_run(void* arg) {
             break;
         }
         self->current_time += 1;
-        msleep(1000/self->clock_speed_multiplier);
+        msleep(1000 / self->clock_speed_multiplier);
     }
     pthread_exit(NULL);
 }
@@ -37,7 +37,7 @@ virtual_clock_t* virtual_clock_init(config_t* config) {
     self->opening_time = 3600 * config->opening_time;
     self->closing_time = 3600 * config->closing_time;
     self->current_time = 3600 * config->opening_time;
-    pthread_create(&self->thread, NULL, virtual_clock_run, (void *) self);
+    pthread_create(&self->thread, NULL, virtual_clock_run, (void*)self);
     return self;
 }
 
