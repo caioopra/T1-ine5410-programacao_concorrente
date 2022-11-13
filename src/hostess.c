@@ -55,10 +55,11 @@ void hostess_guide_first_in_line_customer_to_conveyor_seat(int seat) {
     if(seat<conveyor->_size){
     conveyor->_seats[seat] = 1;
     customer->_seat_position = seat;
-    }
     print_virtual_time(globals_get_virtual_clock());
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess levou o cliente %d para o assento %d!\n", customer->_id, seat);
     print_conveyor_belt(conveyor);
+    }
+
 }
 
 
