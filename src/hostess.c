@@ -1,8 +1,10 @@
 #include "hostess.h"
-#include "semaphore.h"
+
 #include <stdlib.h>
+
 #include "args.h"
 #include "globals.h"
+#include "semaphore.h"
 
 int hostess_check_for_a_free_conveyor_seat() {
     /*
@@ -21,8 +23,7 @@ int hostess_check_for_a_free_conveyor_seat() {
     fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess está procurando por um assento livre...\n");
     print_conveyor_belt(conveyor);
 
-    
-    while(globals_get_oppened()){
+    while (globals_get_oppened()) {
         for (int i = 1; i < conveyor->_size; i++) {
             if (conveyor->_seats[i] == -1) {  // Atenção à regra! (-1 = livre, 0 = sushi_chef, 1 = customer)
                 print_virtual_time(globals_get_virtual_clock());
@@ -30,7 +31,7 @@ int hostess_check_for_a_free_conveyor_seat() {
                 return i;
             }
         }
-    
+
         msleep(120000 / virtual_clock->clock_speed_multiplier);  // Não remova esse sleep!
     }
 }
@@ -49,19 +50,20 @@ void hostess_guide_first_in_line_customer_to_conveyor_seat(int seat) {
     */
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
     queue_t* queue = globals_get_queue();
-    customer_t* customer = queue_remove(queue);
+
+    // CORRIGIR, O SEAT ESTA RETORNANDO 20 DPS QUE FECHA
+    if (globals_get_oppened()) {
+        customer_t* customer = queue_remove(queue);
     
-    //CORRIGIR, O SEAT ESTA RETORNANDO 20 DPS QUE FECHA
-    if(seat<conveyor->_size){
-    conveyor->_seats[seat] = 1;
-    customer->_seat_position = seat;
-    print_virtual_time(globals_get_virtual_clock());
-    fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess levou o cliente %d para o assento %d!\n", customer->_id, seat);
-    print_conveyor_belt(conveyor);
+        if (seat < conveyor->_size) {
+            conveyor->_seats[seat] = 1;
+            customer->_seat_position = seat;
+            print_virtual_time(globals_get_virtual_clock());
+            fprintf(stdout, GREEN "[INFO]" NO_COLOR " O Hostess levou o cliente %d para o assento %d!\n", customer->_id, seat);
+            print_conveyor_belt(conveyor);
+        }
     }
-
 }
-
 
 void* hostess_run() {
     /*
@@ -91,7 +93,7 @@ void* hostess_run() {
 hostess_t* hostess_init() {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     hostess_t* self = malloc(sizeof(hostess_t));
-    
+
     if (self == NULL) {
         fprintf(stdout, RED "[ERROR] Bad malloc() at `hostess_t* hostess_init()`.\n" NO_COLOR);
         exit(EXIT_FAILURE);

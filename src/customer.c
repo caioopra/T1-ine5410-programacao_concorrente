@@ -189,7 +189,7 @@ void customer_leave(customer_t* self) {
     int position = self->_seat_position;
     self->_seat_position = -1;
     conveyor_belt->_seats[position] = -1;
-    
+
     customer_finalize(self);
 }
 

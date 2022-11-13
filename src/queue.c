@@ -19,6 +19,8 @@ void* queue_run(void *arg) {
         print_queue(self);
         msleep((rand() % 120000)/clock->clock_speed_multiplier);
     }
+
+    pthread_exit(NULL);
 }
 
 queue_t* queue_insert(queue_t *self, customer_t* customer) {
