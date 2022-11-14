@@ -11,6 +11,10 @@ void* conveyor_belt_run(void* arg) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     conveyor_belt_t* self = (conveyor_belt_t*)arg;
     virtual_clock_t* virtual_clock = globals_get_virtual_clock();
+    sem_t semaforo = globals_get_semaforo_pegar_comida();
+
+    int sentados = globals_get_sentados();
+
     while (globals_get_oppened()) {
         msleep(CONVEYOR_IDLE_PERIOD / virtual_clock->clock_speed_multiplier);
         print_virtual_time(globals_get_virtual_clock());
@@ -19,13 +23,21 @@ void* conveyor_belt_run(void* arg) {
 
         msleep(CONVEYOR_MOVING_PERIOD / virtual_clock->clock_speed_multiplier);
         // move a esteira (não permite pegar enquanto está mexendo)
-        pthread_mutex_lock(&self->_food_slots_mutex);
+        
+        for(int i =0; i<self->_size-1;i++){
+        pthread_mutex_lock(&self->_individual_slots_mutexes[i]);
+        }
+        //pthread_mutex_lock(&self->_food_slots_mutex); 
         int last = self->_food_slots[0];
         for (int i = 0; i < self->_size - 1; i++) {
             self->_food_slots[i] = self->_food_slots[i + 1];
         }
         self->_food_slots[self->_size - 1] = last;
-        pthread_mutex_unlock(&self->_food_slots_mutex);
+
+        for(int i =0; i<self->_size-1;i++){
+        pthread_mutex_unlock(&self->_individual_slots_mutexes[i]);
+        }
+        //pthread_mutex_unlock(&self->_food_slots_mutex);
 
         print_virtual_time(globals_get_virtual_clock());
         fprintf(stdout, GREEN "[INFO]" NO_COLOR " Conveyor belt finished moving...\n");
@@ -37,6 +49,7 @@ void* conveyor_belt_run(void* arg) {
 conveyor_belt_t* conveyor_belt_init(config_t* config) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     conveyor_belt_t* self = malloc(sizeof(conveyor_belt_t));
+    
     if (self == NULL) {
         fprintf(stdout, RED "[ERROR] Bad malloc() at `conveyor_belt_t* conveyor_belt_init()`.\n" NO_COLOR);
         exit(EXIT_FAILURE);
@@ -45,6 +58,8 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
     self->_seats = (int*)malloc(sizeof(int) * self->_size);
     self->_food_slots = (int*)malloc(sizeof(int) * self->_size);
     
+    sem_t semaforo = globals_get_semaforo_pegar_comida();
+
     for (int i = 0; i < self->_size; i++) {
         self->_food_slots[i] = -1;
         self->_seats[i] = -1;
@@ -52,6 +67,8 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
     }
     pthread_mutex_init(&self->_seats_mutex, NULL);
     pthread_mutex_init(&self->_food_slots_mutex, NULL);
+
+    sem_init(&semaforo,0,0);
 
     // aloca vetor com mutexes para cada posição da esteira (_size mutexes)
     self->_individual_slots_mutexes = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * self->_size);
@@ -66,7 +83,9 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
 
 void conveyor_belt_finalize(conveyor_belt_t* self) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
+    sem_t semaforo = globals_get_semaforo_pegar_comida();
     pthread_join(self->thread, NULL);
+    sem_destroy(&semaforo);
     pthread_mutex_destroy(&self->_seats_mutex);
     pthread_mutex_destroy(&self->_food_slots_mutex);
 

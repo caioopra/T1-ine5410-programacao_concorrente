@@ -69,9 +69,9 @@ void globals_set_oppened(unsigned int state);
  */
 unsigned int globals_get_oppened();
 
-sem_t globals_get_sem_cheio();
+sem_t globals_get_semaforo_pegar_comida();
 
-sem_t globals_get_sem_vazio();
+int globals_get_sentados();
 
 /**
  * @brief Retorna quantidade de pratos produzidos de cada tipo

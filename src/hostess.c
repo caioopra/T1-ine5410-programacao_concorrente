@@ -50,12 +50,15 @@ void hostess_guide_first_in_line_customer_to_conveyor_seat(int seat) {
     */
     conveyor_belt_t* conveyor = globals_get_conveyor_belt();
     queue_t* queue = globals_get_queue();
-
+    int sentados = globals_get_sentados();
+    sem_t semaforo = globals_get_semaforo_pegar_comida();
     // CORRIGIR, O SEAT ESTA RETORNANDO 20 DPS QUE FECHA
     if (globals_get_oppened()) {
         customer_t* customer = queue_remove(queue);
     
         if (seat < conveyor->_size) {
+            sentados++;
+            // sem_post(&semaforo);
             conveyor->_seats[seat] = 1;
             customer->_seat_position = seat;
             print_virtual_time(globals_get_virtual_clock());

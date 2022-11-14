@@ -26,6 +26,9 @@ void* customer_run(void* arg) {
     /* INSIRA SUA LÓGICA AQUI */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
 
+    sem_t semaforo = globals_get_semaforo_pegar_comida();
+
+    int sentados = globals_get_sentados();
     // @Caio: conta quantos pratos vai querer comer ao todo
     int satisfeito = 0;
     for (int i = 0; i < 5; i++) {
@@ -61,13 +64,12 @@ void* customer_run(void* arg) {
                     Cada posição da esteira é protegida individualmente por um mutex (_individual_slots_mutexes[i])
                 */
                 if (comida != -1 && self->_wishes[comida] > 0) {
-                    pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
+                    
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     comida = conveyor_belt->_food_slots[posicao];
                     if (comida != -1 && self->_wishes[comida] > 0) {
                         customer_pick_food(posicao);
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
 
                         // come
                         customer_eat(self, comida);
@@ -78,7 +80,7 @@ void* customer_run(void* arg) {
 
                     } else {
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+
                     }
                 }
             }
@@ -86,6 +88,8 @@ void* customer_run(void* arg) {
     }
     if (self->_seat_position > 0) {
         customer_leave(self);
+        sem_wait(&semaforo);
+        sentados--;
     }
 
     pthread_exit(NULL);
