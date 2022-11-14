@@ -32,7 +32,7 @@ int pratos_produzidos[5] = {0, 0, 0, 0, 0};
 
 // array com quantidades consumidas de cada prato
 int pratos_consumidos[5] = {0, 0, 0, 0, 0};
-int* pratos_consumidos[5] = {0, 0, 0, 0, 0};
+//int* pratos_consumidos[5] = {0, 0, 0, 0, 0};
 
 void globals_set_virtual_clock(virtual_clock_t* virtual_clock) {
     global_virtual_clock = virtual_clock;
@@ -108,7 +108,7 @@ void finalize() {
     fprintf(stdout, BLUE "FIM DA SIMULAÇÃO:");
     fprintf(stdout, "\n" BLUE BAR);
 
-    fprintf(stdout, CYAN "\n Quantidade de clientes que consumiram tudo que desejavam: %d\n", cliente_satisfeito);
+    fprintf(stdout, CYAN "\n Quantidade de clientes que consumiram tudo que desejavam: %d\n\n", cliente_satisfeito);
 
     // TODO: quantidade está saindo errada
     fprintf(stdout, CYAN " Quantidade de pratos produzidos:\n");
@@ -116,7 +116,7 @@ void finalize() {
     fprintf(stdout, CYAN " - Dango   %s: %d\n", DANGO, pratos_produzidos[1]);
     fprintf(stdout, CYAN " - Ramen   %s: %d\n", RAMEN, pratos_produzidos[2]);
     fprintf(stdout, CYAN " - Onigiri %s: %d\n", ONIGIRI, pratos_produzidos[3]);
-    fprintf(stdout, CYAN " - Tofu    %s: %d\n", TOFU, pratos_produzidos[4]);
+    fprintf(stdout, CYAN " - Tofu    %s: %d\n\n", TOFU, pratos_produzidos[4]);
 
     fprintf(stdout, CYAN " Quantidade de pratos consumidos:\n");
     fprintf(stdout, CYAN " - Sushi   %s: %d\n", SUSHI, pratos_consumidos[0]);
