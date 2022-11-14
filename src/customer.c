@@ -26,9 +26,7 @@ void* customer_run(void* arg) {
     /* INSIRA SUA LÓGICA AQUI */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
 
-    sem_t semaforo = globals_get_semaforo_pegar_comida();
 
-    int sentados = globals_get_sentados();
     // @Caio: conta quantos pratos vai querer comer ao todo
     int satisfeito = 0;
     for (int i = 0; i < 5; i++) {
@@ -88,8 +86,6 @@ void* customer_run(void* arg) {
     }
     if (self->_seat_position > 0) {
         customer_leave(self);
-        sem_wait(&semaforo);
-        sentados--;
     }
 
     pthread_exit(NULL);

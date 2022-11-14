@@ -20,7 +20,7 @@ queue_t* global_queue = NULL;
 // indica se o sushi shop está aberto
 unsigned int oppened = FALSE;
 
-sem_t semaforo_pegar_comida; 
+
 
 // @Caio: arrays dos pratos seguem mesma ordem do enum
 // array com quantidades produzidas de cada prato
@@ -35,9 +35,6 @@ int globals_get_sentados(){
     return sentados;
 }
 
-sem_t globals_get_semaforo_pegar_comida(){
-    return semaforo_pegar_comida;
-}
 
 void globals_set_virtual_clock(virtual_clock_t* virtual_clock) {
     global_virtual_clock = virtual_clock;
