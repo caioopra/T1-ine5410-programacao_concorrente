@@ -53,6 +53,12 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
     pthread_mutex_init(&self->_seats_mutex, NULL);
     pthread_mutex_init(&self->_food_slots_mutex, NULL);
 
+    pthread_mutex_t consumed_food_mutex = globals_get_consumed_food_mutex();
+    pthread_mutex_init(&consumed_food_mutex, NULL);
+
+    pthread_mutex_t cliente_satisfeito_mutex = globals_get_cliente_satisfeito_mutex();
+    pthread_mutex_init(&cliente_satisfeito_mutex, NULL);
+
     // aloca vetor com mutexes para cada posição da esteira (_size mutexes)
     self->_individual_slots_mutexes = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t) * self->_size);
     for (int i = 0; i < self->_size; i++) {

@@ -1,15 +1,14 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 #include "args.h"
 #include "customer.h"
-#include "sushi_chef.h"
-#include "hostess.h"
 #include "globals.h"
+#include "hostess.h"
+#include "sushi_chef.h"
 
-
-int main (int argc, char** argv) {
+int main(int argc, char** argv) {
     /* Read command line options */
     config_t config = parse(argc, argv);
 

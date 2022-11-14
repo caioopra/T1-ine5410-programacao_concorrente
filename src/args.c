@@ -1,13 +1,12 @@
+#include "args.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "args.h"
-
-
-config_t parse(int argc, char **argv) {
+config_t parse(int argc, char** argv) {
     int c;
-    config_t config = { 1, 20, 10, 18, 15 };
+    config_t config = {1, 20, 10, 18, 15};
 
     while ((c = getopt(argc, argv, "c:b:s:o:x:m:h")) != -1) {
         switch (c) {
@@ -118,4 +117,3 @@ void description() {
 void version() {
     fprintf(stdout, MAGENTA "Version: " GRAY "%s\n" NO_COLOR, __PROGRAM_VERSION__);
 }
-

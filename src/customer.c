@@ -85,6 +85,9 @@ void* customer_run(void* arg) {
         }
     }
     if (self->_seat_position > 0) {
+        if (!satisfeito) {
+            globals_add_satisfeito();
+        }
         customer_leave(self);
     }
 

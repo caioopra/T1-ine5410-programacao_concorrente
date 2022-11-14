@@ -69,10 +69,6 @@ void globals_set_oppened(unsigned int state);
  */
 unsigned int globals_get_oppened();
 
-sem_t globals_get_sem_cheio();
-
-sem_t globals_get_sem_vazio();
-
 /**
  * @brief Retorna quantidade de pratos produzidos de cada tipo
  *
@@ -88,6 +84,13 @@ int *globals_get_pratos_produzidos();
 void globals_add_prato_produzido(int prato);
 
 /**
+ * @brief Retorna mutex que protege array com os pratos consumidos
+ *  
+ * @return pthread_mutex_t: mutex que protege array pratos_consumidos
+*/
+pthread_mutex_t globals_get_consumed_food_mutex();
+
+/**
  * @brief Retorna a quantidade de pratos consumidos de cada tipo
  *
  * @return int*: array com pratos consumidos (ordem de menu_item)
@@ -99,6 +102,21 @@ int *globals_get_prato_consumido();
  *
  * @param prato
  */
-void globals_add_prato_consumido(int prato);
+
+/**
+ * @brief Finaliza os mutexes globais usados
+ * 
+ */
+void finalize_global_mutexes();
+
+pthread_mutex_t globals_get_cliente_satisfeito_mutex();
+
+void globals_add_satisfeito();
+
+/**
+ * @brief Prints finais do programa
+ *
+ */
+void finalize();
 
 #endif  // __GLOBALS_H__
