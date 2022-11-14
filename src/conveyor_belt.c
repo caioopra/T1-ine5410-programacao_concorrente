@@ -11,6 +11,8 @@ void* conveyor_belt_run(void* arg) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     conveyor_belt_t* self = (conveyor_belt_t*)arg;
     virtual_clock_t* virtual_clock = globals_get_virtual_clock();
+    
+
     while (globals_get_oppened()) {
         msleep(CONVEYOR_IDLE_PERIOD / virtual_clock->clock_speed_multiplier);
         print_virtual_time(globals_get_virtual_clock());
@@ -19,13 +21,21 @@ void* conveyor_belt_run(void* arg) {
 
         msleep(CONVEYOR_MOVING_PERIOD / virtual_clock->clock_speed_multiplier);
         // move a esteira (não permite pegar enquanto está mexendo)
-        pthread_mutex_lock(&self->_food_slots_mutex);
+        
+        for(int i =0; i<self->_size;i++){
+        pthread_mutex_lock(&self->_individual_slots_mutexes[i]);
+        }
+        
         int last = self->_food_slots[0];
         for (int i = 0; i < self->_size - 1; i++) {
             self->_food_slots[i] = self->_food_slots[i + 1];
         }
         self->_food_slots[self->_size - 1] = last;
-        pthread_mutex_unlock(&self->_food_slots_mutex);
+        
+        for(int i =0; i<self->_size;i++){
+        pthread_mutex_unlock(&self->_individual_slots_mutexes[i]);
+        }
+        
 
         print_virtual_time(globals_get_virtual_clock());
         fprintf(stdout, GREEN "[INFO]" NO_COLOR " Conveyor belt finished moving...\n");
@@ -37,6 +47,7 @@ void* conveyor_belt_run(void* arg) {
 conveyor_belt_t* conveyor_belt_init(config_t* config) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
     conveyor_belt_t* self = malloc(sizeof(conveyor_belt_t));
+    
     if (self == NULL) {
         fprintf(stdout, RED "[ERROR] Bad malloc() at `conveyor_belt_t* conveyor_belt_init()`.\n" NO_COLOR);
         exit(EXIT_FAILURE);
@@ -45,6 +56,7 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
     self->_seats = (int*)malloc(sizeof(int) * self->_size);
     self->_food_slots = (int*)malloc(sizeof(int) * self->_size);
     
+
     for (int i = 0; i < self->_size; i++) {
         self->_food_slots[i] = -1;
         self->_seats[i] = -1;
@@ -72,6 +84,7 @@ conveyor_belt_t* conveyor_belt_init(config_t* config) {
 
 void conveyor_belt_finalize(conveyor_belt_t* self) {
     /* NÃO PRECISA ALTERAR ESSA FUNÇÃO */
+
     pthread_join(self->thread, NULL);
     pthread_mutex_destroy(&self->_seats_mutex);
     pthread_mutex_destroy(&self->_food_slots_mutex);

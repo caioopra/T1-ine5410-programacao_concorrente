@@ -24,12 +24,15 @@ int cliente_satisfeito = 0;
 // indica se o sushi shop está aberto
 unsigned int oppened = FALSE;
 
+
+
 // @Caio: arrays dos pratos seguem mesma ordem do enum
 // array com quantidades produzidas de cada prato
 int pratos_produzidos[5] = {0, 0, 0, 0, 0};
 
 // array com quantidades consumidas de cada prato
 int pratos_consumidos[5] = {0, 0, 0, 0, 0};
+int* pratos_consumidos[5] = {0, 0, 0, 0, 0};
 
 void globals_set_virtual_clock(virtual_clock_t* virtual_clock) {
     global_virtual_clock = virtual_clock;

@@ -26,6 +26,7 @@ void* customer_run(void* arg) {
     /* INSIRA SUA LÓGICA AQUI */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
 
+
     // @Caio: conta quantos pratos vai querer comer ao todo
     int satisfeito = 0;
     for (int i = 0; i < 5; i++) {
@@ -61,13 +62,12 @@ void* customer_run(void* arg) {
                     Cada posição da esteira é protegida individualmente por um mutex (_individual_slots_mutexes[i])
                 */
                 if (comida != -1 && self->_wishes[comida] > 0) {
-                    pthread_mutex_lock(&conveyor_belt->_food_slots_mutex);
+                    
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     comida = conveyor_belt->_food_slots[posicao];
                     if (comida != -1 && self->_wishes[comida] > 0) {
                         customer_pick_food(posicao);
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
 
                         // come
                         customer_eat(self, comida);
@@ -78,7 +78,7 @@ void* customer_run(void* arg) {
 
                     } else {
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-                        pthread_mutex_unlock(&conveyor_belt->_food_slots_mutex);
+
                     }
                 }
             }
