@@ -102,6 +102,7 @@ int *globals_get_prato_consumido();
  *
  * @param prato
  */
+void globals_add_prato_consumido();
 
 /**
  * @brief Finaliza os mutexes globais usados

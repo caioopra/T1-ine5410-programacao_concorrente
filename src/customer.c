@@ -27,10 +27,10 @@ void* customer_run(void* arg) {
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
 
     // @Caio: conta quantos pratos vai querer comer ao todo
-    int satisfeito = 0;
+    int nao_satisfeito = 0;
     for (int i = 0; i < 5; i++) {
         if (self->_wishes[i] > 0) {
-            satisfeito += self->_wishes[i];
+            nao_satisfeito += self->_wishes[i];
         }
     }
 
@@ -43,7 +43,7 @@ void* customer_run(void* arg) {
     int last_reachable = 2;
     int posicao, comida;
 
-    while (globals_get_oppened() && satisfeito) {
+    while (globals_get_oppened() && nao_satisfeito) {
         if (self->_seat_position > 0) {
             if (self->_seat_position == conveyor_belt->_size - 1)
                 last_reachable = 1;
@@ -71,8 +71,8 @@ void* customer_run(void* arg) {
                         customer_eat(self, comida);
                         // remove comida da lista de comidas desejadas
                         self->_wishes[comida]--;
-                        // decrementa satisfeito
-                        satisfeito--;
+                        // decrementa nao_satisfeito
+                        nao_satisfeito--;
 
                     } else {
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
@@ -83,12 +83,11 @@ void* customer_run(void* arg) {
     }
 
     if (self->_seat_position > 0) {
-        if (!satisfeito) {
+        if (!nao_satisfeito) {
             globals_add_satisfeito();
         }
         customer_leave(self);
     }
-
     pthread_exit(NULL);
 }
 
@@ -122,8 +121,6 @@ void customer_eat(customer_t* self, enum menu_item food) {
     */
 
     /* INSIRA SUA LÓGICA AQUI */
-
-    globals_add_prato_consumido(food);
 
     /* NÃO EDITE O CONTEÚDO ABAIXO */
     virtual_clock_t* global_clock = globals_get_virtual_clock();
@@ -168,6 +165,7 @@ void customer_eat(customer_t* self, enum menu_item food) {
             fprintf(stdout, RED "[ERROR] Invalid menu_item variant passed to `customer_eat()`.\n" NO_COLOR);
             exit(EXIT_FAILURE);
     }
+    globals_add_prato_consumido(food);
 }
 
 void customer_leave(customer_t* self) {
