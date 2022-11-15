@@ -13,8 +13,8 @@ void* customer_run(void* arg) {
         1.  A PRIMEIRA AÇÃO REALIZADA SERÁ ESPERAR NA FILA GLOBAL DE CLIENTES, ATÉ QUE O HOSTESS
             GUIE O CLIENTE PARA UM ASSENTO LIVRE.
         2.  APÓS SENTAR-SE, O CLIENTE COMEÇARÁ PEGAR E COMER OS PRATOS DA ESTEIRA.
-        3.  O CLIENTE SÓ PODERÁ PEGAR UM PRATO QUANDO A ESTEIRA ESTIVER PARADA.     OK?
-        4.  O CLIENTE SÓ PEGARÁ PRATOS CASO ELE DESEJE-OS, INFORMAÇÃO CONTIDA NO ARRAY self->_wishes[...].      OK
+        3.  O CLIENTE SÓ PODERÁ PEGAR UM PRATO QUANDO A ESTEIRA ESTIVER PARADA.
+        4.  O CLIENTE SÓ PEGARÁ PRATOS CASO ELE DESEJE-OS, INFORMAÇÃO CONTIDA NO ARRAY self->_wishes[...].
         5.  APÓS CONSUMIR TODOS OS PRATOS DESEJADOS, O CLIENTE DEVERÁ SAIR IMEDIATAMENTE DA ESTEIRA.
         6.  QUANTO O RESTAURANTE FECHAR, O CLIENTE DEVERÁ SAIR IMEDIATAMENTE DA ESTEIRA.
         7.  CASO O CLIENTE ESTEJA COMENDO QUANDO O SUSHI SHOP FECHAR, ELE DEVE TERMINAR DE COMER E EM SEGUIDA
@@ -25,7 +25,6 @@ void* customer_run(void* arg) {
 
     /* INSIRA SUA LÓGICA AQUI */
     conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
-
 
     // @Caio: conta quantos pratos vai querer comer ao todo
     int satisfeito = 0;
@@ -62,7 +61,6 @@ void* customer_run(void* arg) {
                     Cada posição da esteira é protegida individualmente por um mutex (_individual_slots_mutexes[i])
                 */
                 if (comida != -1 && self->_wishes[comida] > 0) {
-                    
                     pthread_mutex_lock(&conveyor_belt->_individual_slots_mutexes[posicao]);
                     comida = conveyor_belt->_food_slots[posicao];
                     if (comida != -1 && self->_wishes[comida] > 0) {
@@ -78,12 +76,12 @@ void* customer_run(void* arg) {
 
                     } else {
                         pthread_mutex_unlock(&conveyor_belt->_individual_slots_mutexes[posicao]);
-
                     }
                 }
             }
         }
     }
+
     if (self->_seat_position > 0) {
         if (!satisfeito) {
             globals_add_satisfeito();
@@ -95,7 +93,6 @@ void* customer_run(void* arg) {
 }
 
 void customer_pick_food(int food_slot) {
-    conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
     /*
         MODIFIQUE ESSA FUNÇÃO PARA GARANTIR O COMPORTAMENTO CORRETO E EFICAZ DO CLIENTE.
         NOTAS:
@@ -109,6 +106,7 @@ void customer_pick_food(int food_slot) {
 
     /* INSIRA SUA LÓGICA AQUI */
 
+    conveyor_belt_t* conveyor_belt = globals_get_conveyor_belt();
     conveyor_belt->_food_slots[food_slot] = -1;  // remove prato da esteira
 }
 

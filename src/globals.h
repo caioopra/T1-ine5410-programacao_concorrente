@@ -85,9 +85,9 @@ void globals_add_prato_produzido(int prato);
 
 /**
  * @brief Retorna mutex que protege array com os pratos consumidos
- *  
+ *
  * @return pthread_mutex_t: mutex que protege array pratos_consumidos
-*/
+ */
 pthread_mutex_t globals_get_consumed_food_mutex();
 
 /**
@@ -105,10 +105,15 @@ int *globals_get_prato_consumido();
 
 /**
  * @brief Finaliza os mutexes globais usados
- * 
+ *
  */
 void finalize_global_mutexes();
 
+/**
+ * @brief Retorna o mutex que protege o incrementador de clientes satisfeitos
+ *
+ * @return pthread_mutex_t
+ */
 pthread_mutex_t globals_get_cliente_satisfeito_mutex();
 
 void globals_add_satisfeito();

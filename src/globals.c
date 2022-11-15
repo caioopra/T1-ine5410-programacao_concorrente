@@ -24,15 +24,12 @@ int cliente_satisfeito = 0;
 // indica se o sushi shop está aberto
 unsigned int oppened = FALSE;
 
-
-
 // @Caio: arrays dos pratos seguem mesma ordem do enum
 // array com quantidades produzidas de cada prato
 int pratos_produzidos[5] = {0, 0, 0, 0, 0};
 
 // array com quantidades consumidas de cada prato
 int pratos_consumidos[5] = {0, 0, 0, 0, 0};
-//int* pratos_consumidos[5] = {0, 0, 0, 0, 0};
 
 void globals_set_virtual_clock(virtual_clock_t* virtual_clock) {
     global_virtual_clock = virtual_clock;
@@ -90,7 +87,7 @@ void globals_add_prato_consumido(int prato) {
 
 void finalize_global_mutexes() {
     pthread_mutex_destroy(&consumed_food_mutex);
-
+    pthread_mutex_destroy(&cliente_satisfeito_mutex);
 }
 
 pthread_mutex_t globals_get_cliente_satisfeito_mutex() {
@@ -110,7 +107,6 @@ void finalize() {
 
     fprintf(stdout, CYAN "\n Quantidade de clientes que consumiram tudo que desejavam: %d\n\n", cliente_satisfeito);
 
-    // TODO: quantidade está saindo errada
     fprintf(stdout, CYAN " Quantidade de pratos produzidos:\n");
     fprintf(stdout, CYAN " - Sushi   %s: %d\n", SUSHI, pratos_produzidos[0]);
     fprintf(stdout, CYAN " - Dango   %s: %d\n", DANGO, pratos_produzidos[1]);
